@@ -25,5 +25,5 @@ RUN     set -eux; \
 COPY    ./conf/jeluiz4.42.fr.conf /etc/nginx/http.d/default.conf
 
 EXPOSE  443
-EXPOSE  80
+#EXPOSE  80
 CMD     ["nginx", "-g", "daemon off;"]
