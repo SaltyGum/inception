@@ -5,20 +5,21 @@ volumes:
                 name: wordpress
                 driver: local
                 driver_opts:
-                        device: /home/saltygum/cursus42/incept/srcs/requirements/wordpress/dump/
+                        device: /home/jeluiz4/inception/srcs/requirements/wordpress/dump/
                         o: bind
                         type: none
         mariadb:
                 name: mariadb
                 driver: local
                 driver_opts:
-                        device: /home/saltygum/cursus42/incept/srcs/requirements/mariadb/dump/
+                        device: /home/jeluiz4/inception/srcs/requirements/mariadb/dump/
                         o: bind
                         type: none
 
 networks:
   inception:
     name: inception
+    driver: bridge
 
 services:
   nginx:
@@ -40,6 +41,8 @@ services:
     container_name: wordpress
     build: ./requirements/wordpress/.
     image: wordpress
+    ports:
+      - 9000
     depends_on:
       - mariadb
     volumes:
@@ -53,6 +56,8 @@ services:
     container_name: mariadb
     build: ./requirements/mariadb/.
     image: mariadb
+    ports:
+      - 3306
     volumes:
       - mariadb:/var/lib/mysql
     env_file:

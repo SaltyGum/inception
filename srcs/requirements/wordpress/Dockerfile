@@ -1,15 +1,35 @@
-FROM debian:buster
+# syntax=docker/dockerfile:1
 
-RUN	apt-get update -y
+FROM    debian:buster
 
-RUN	apt-get install php-fpm php-mysql curl -y
+ENV WP_DOMAIN=${WP_DOMAIN}
 
-COPY	./tools/script.sh .
+RUN     set -eux; \ 
+        apt-get update && apt-get install -y php php-fpm \
+                                      php-mysql \
+                                      php-gd \
+                                      php-curl \
+                                      php-zip \
+                                      php-json \
+                                      php-xml \
+                                      php-redis \
+                                      openssl \
+                                      php-mbstring \
+                                      php-intl \
+                                      vim \
+                                      curl \
+                                      wget \
+                                      ; \
+        rm -rf /var/lib/apt/lists/*
 
-COPY    ./conf/wp-pool.conf /etc/php/7.3/fpm/pool.d/www.conf
+COPY	conf/wp-pool.conf /etc/php/7.3/fpm/pool.d/www.conf
+COPY    ./conf/wp-config.php .
+COPY    ./tools/wp-setup.sh .   
 
-COPY	./tools/wp-config.php .
+RUN		mkdir -p /var/www/html/$WP_DOMAIN
+RUN		chmod 777 -R /var/www/html/$WP_DOMAIN
+RUN		chown -R www-data:www-data /var/www/html/$WP_DOMAIN
 
-RUN     chmod +x ./script.sh 
-
-ENTRYPOINT  [ "./script.sh" ]
+RUN     chmod +x ./wp-setup.sh 
+ENTRYPOINT ["./wp-setup.sh"]
+EXPOSE 9000

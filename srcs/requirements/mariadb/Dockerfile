@@ -1,20 +1,27 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:buster
+FROM alpine:3.17.4
 
-RUN apt-get update -y && apt-get install -y  mariadb-server \
-    mariadb-client \
-    bash \
-    vim \
-    cowsay
+RUN     set -eux; \
+        apk add --no-cache  mariadb \
+                            mariadb-client \
+                            mariadb-common \
+                            mariadb-server-utils \
+                            bash \
+                            vim \
+                            ; \
+        rm -f /etc/mysql/my.cnf /etc/my.cf ~/my.cf
 
+COPY    ./conf/my.cnf /etc/mysql/my.cnf
+COPY    ./conf/my.cnf /etc/my.cnf.d/mariadb-server.cnf
+COPY    ./conf/my.cnf /root/.my.cnf 
 
-COPY ./tools/db_Conf.cnf /etc/mysql/mariadb.conf.d/
+RUN     set -eux; \
+        mkdir -p /run/mysql /var/lib/mysql; \
+        chmod 777 /var/lib/mysql
 
-COPY ./tools/script.sh /
+COPY    ./tools/script.sh /script.sh
+RUN     chmod +x /script.sh
 
-RUN	chmod +x ./script.sh
-
-RUN ls -l
-
-CMD [ "./script.sh" ]
+ENTRYPOINT ["./script.sh"]
+EXPOSE 3306
