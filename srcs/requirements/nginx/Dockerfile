@@ -4,14 +4,12 @@ FROM    alpine:3.17.4
 
 ENV WP_DOMAIN=${WP_DOMAIN}
 
-# requirements
 RUN     set -eux; \
         apk add --no-cache nginx \
                            openssl \
                            bash \
                            vim
 
-# setting up the user
 RUN     set -eux; \
         mkdir -p /var/www/html/$WP_DOMAIN; \
         adduser -u 82 -S -D -G www-data www-data; \
